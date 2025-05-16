@@ -111,18 +111,6 @@ const ProfileScreen = () => {
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="notifications-outline" size={24} color="#4630EB" />
-          <Text style={styles.menuItemText}>Notifications</Text>
-          <Ionicons name="chevron-forward" size={20} color="#999" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.menuItem}>
-          <Ionicons name="help-buoy-outline" size={24} color="#4630EB" />
-          <Text style={styles.menuItemText}>Help & Support</Text>
-          <Ionicons name="chevron-forward" size={20} color="#999" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.menuItem}>
           <Ionicons name="information-circle-outline" size={24} color="#4630EB" />
           <Text style={styles.menuItemText}>About LateWork</Text>
           <Ionicons name="chevron-forward" size={20} color="#999" />

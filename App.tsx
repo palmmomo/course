@@ -3,9 +3,9 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, LogBox } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppNavigator from './src/navigation';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { firestore } from './src/config/firebase';
+import { auth, firestore } from './src/config/firebase';
 
 // Ignore specific Firebase warnings that we can't fix
 LogBox.ignoreLogs([
@@ -17,10 +17,8 @@ LogBox.ignoreLogs([
 export default function App() {
   useEffect(() => {
     // Setup auth state listener to manage user sessions
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
       if (user) {
-        // Check if user exists in Firestore, if not create a document
         try {
           const userRef = doc(firestore, 'users', user.uid);
           const userSnap = await getDoc(userRef);
@@ -28,12 +26,12 @@ export default function App() {
           if (!userSnap.exists()) {
             await setDoc(userRef, {
               id: user.uid,
-              email: user.email,
-              displayName: user.displayName || '',
-              photoURL: user.photoURL || '',
-              role: 'user',
-              enrolledCourses: [],
-              createdAt: Date.now()
+              email: user.email ?? '', // Use nullish coalescing for safety
+              displayName: user.displayName ?? '',
+              photoURL: user.photoURL ?? '',
+              role: 'user' as const, // Define role as a literal type
+              enrolledCourses: [] as string[], // Explicitly type as string array
+              createdAt: Date.now(),
             });
           }
         } catch (error) {

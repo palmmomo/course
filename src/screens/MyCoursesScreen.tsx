@@ -148,30 +148,49 @@ const MyCoursesScreen = () => {
   }, []);
 
   const handleUnenroll = async (courseId: string, courseName: string) => {
-    // ใช้ Alert.alert สำหรับทุกแพลตฟอร์มเพื่อหลีกเลี่ยงปัญหา runtime
-    Alert.alert(
-      'ยืนยันการยกเลิก',
-      `คุณต้องการยกเลิกการลงทะเบียนคอร์ส "${courseName}" ใช่หรือไม่?`,
-      [
-        { text: 'ยกเลิก', style: 'cancel' },
-        {
-          text: 'ยืนยัน',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              setLoading(true);
-              await unenrollFromCourse(courseId);
-              Alert.alert('สำเร็จ', 'ยกเลิกการลงทะเบียนเรียบร้อยแล้ว');
-            } catch (error) {
-              console.error('Error unenrolling from course:', error);
-              Alert.alert('เกิดข้อผิดพลาด', 'ไม่สามารถยกเลิกการลงทะเบียนได้ กรุณาลองใหม่');
-            } finally {
-              setLoading(false);
-            }
+    // ตรวจสอบว่ากำลังรันบน web หรือ mobile
+    if (Platform.OS === 'web') {
+      // สำหรับ web ใช้ confirm ของ browser
+      const isConfirmed = window.confirm(`คุณต้องการยกเลิกการลงทะเบียนคอร์ส "${courseName}" ใช่หรือไม่?`);
+      
+      if (isConfirmed) {
+        try {
+          setLoading(true);
+          await unenrollFromCourse(courseId);
+          window.alert('ยกเลิกการลงทะเบียนเรียบร้อยแล้ว');
+        } catch (error) {
+          console.error('Error unenrolling from course:', error);
+          window.alert('ไม่สามารถยกเลิกการลงทะเบียนได้ กรุณาลองใหม่');
+        } finally {
+          setLoading(false);
+        }
+      }
+    } else {
+      // สำหรับ mobile ใช้ Alert.alert
+      Alert.alert(
+        'ยืนยันการยกเลิก',
+        `คุณต้องการยกเลิกการลงทะเบียนคอร์ส "${courseName}" ใช่หรือไม่?`,
+        [
+          { text: 'ยกเลิก', style: 'cancel' },
+          {
+            text: 'ยืนยัน',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                setLoading(true);
+                await unenrollFromCourse(courseId);
+                Alert.alert('สำเร็จ', 'ยกเลิกการลงทะเบียนเรียบร้อยแล้ว');
+              } catch (error) {
+                console.error('Error unenrolling from course:', error);
+                Alert.alert('เกิดข้อผิดพลาด', 'ไม่สามารถยกเลิกการลงทะเบียนได้ กรุณาลองใหม่');
+              } finally {
+                setLoading(false);
+              }
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
   const renderCourseItem = ({ item }: { item: Course }) => (
